@@ -3,6 +3,7 @@ import { MembershipCard, type MembershipTier } from "./MembershipCard";
 import { InviteToJoinModal } from "./InviteToJoinModal";
 import { SpaBookingPanel } from "./SpaBookingPanel";
 import { LeftNavigation } from "./LeftNavigation";
+import { MatchMergeModal } from "./MatchMergeModal";
 import svgPaths from "../../imports/svg-z5wqpc8gre";
 import imgTopMenuBtn from "figma:asset/89fd3907d8b56f3b5f722371743eeb824ae3c33a.png";
 import { imgNotifications } from "../../imports/svg-bc7kn";
@@ -156,7 +157,7 @@ function ContactMail() {
 }
 
 export function GuestPage() {
-  const [actualTier, setActualTier] = useState<MembershipTier>("blue");
+  const [actualTier, setActualTier] = useState<MembershipTier>("non-member");
   const [showSuperColleague, setShowSuperColleague] = useState(true);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isSpaBookingExpanded, setIsSpaBookingExpanded] = useState(false);
@@ -169,8 +170,20 @@ export function GuestPage() {
     duration: number;
     practitioner: string;
   }>>([]);
-  const [isPotentialMember, setIsPotentialMember] = useState(false);
-  const [matchingFields, setMatchingFields] = useState<Array<'email' | 'phone' | 'lastName'>>([]);
+  const [isPotentialMember, setIsPotentialMember] = useState(true);
+  const [matchingFields, setMatchingFields] = useState<Array<'email' | 'phone' | 'lastName'>>(['email', 'phone']);
+  const [isMatchMergeModalOpen, setIsMatchMergeModalOpen] = useState(false);
+  const [matchMergeSourceData, setMatchMergeSourceData] = useState<any>(null);
+
+  const mockExistingMemberData = {
+    firstName: "Anne Victoria Eline Wang",
+    lastName: "Korsmo",
+    email: "victoria.wangkorsmo@gmail.com",
+    phone: "98271928",
+    tier: "silver" as MembershipTier,
+    spenn: 12500,
+    memberId: "MCR-89210-NO"
+  };
 
   // Guest data
   const nightsAtProperty = 1;
@@ -216,7 +229,7 @@ export function GuestPage() {
                 <div>
                   <div className="flex items-center gap-[8px] mb-[8px]">
                     <h1 style={{ fontFamily: "var(--font-strawberry-display)", fontSize: "var(--text-2xl)", fontWeight: "var(--font-weight-medium)", color: "var(--color-foreground)" }}>
-                      Strawberry Strawberryson
+                      Victoria Korsmo
                     </h1>
                     {actualTier !== "non-member" && (
                       <div
@@ -1111,6 +1124,7 @@ export function GuestPage() {
                 actualTier={actualTier}
                 nightsAtProperty={nightsAtProperty}
                 onInviteClick={() => setIsInviteModalOpen(true)}
+                onReviewMatch={() => setIsMatchMergeModalOpen(true)}
                 qualifyingPeriodStart={!["non-member", "lifetime-gold", "lifetime-platinum"].includes(actualTier) ? "1 Jan 2025" : undefined}
                 qualifyingPeriodEnd={!["non-member", "lifetime-gold", "lifetime-platinum"].includes(actualTier) ? "31 Dec 2025" : undefined}
                 membershipExpiryDate={!["non-member", "lifetime-gold", "lifetime-platinum"].includes(actualTier) ? "31 May 2027" : undefined}
@@ -1130,13 +1144,103 @@ export function GuestPage() {
         onEnrollSuccess={(tier) => {
           setActualTier(tier);
           setIsInviteModalOpen(false);
+          setIsPotentialMember(false);
+        }}
+        onMatchDetected={(fields, data) => {
+          setMatchingFields(fields);
+          setMatchMergeSourceData(data);
+          setIsInviteModalOpen(false);
+          setIsMatchMergeModalOpen(true);
         }}
         initialData={{
-          firstName: "Anne Victoria Eline Wang",
-          lastName: "Korsmo",
-          email: "victoria.wangkorsmo@gmail.com",
-          mobile: "98271928"
+          firstName: matchMergeSourceData?.firstName || "Victoria",
+          lastName: matchMergeSourceData?.lastName || "Korsmo",
+          email: matchMergeSourceData?.email || "victoria.wangkorsmo@gmail.com",
+          mobile: matchMergeSourceData?.mobile || "98271928"
         }}
+      />
+
+      <MatchMergeModal
+        isOpen={isMatchMergeModalOpen}
+        onClose={() => setIsMatchMergeModalOpen(false)}
+        onDismiss={() => {
+          setIsPotentialMember(false);
+          setIsMatchMergeModalOpen(false);
+        }}
+        onMerge={(resolvedData) => {
+          console.log("Merged with chosen field values:", resolvedData);
+          setActualTier(mockExistingMemberData.tier);
+          setIsPotentialMember(false);
+          setIsMatchMergeModalOpen(false);
+        }}
+        matchScore="High"
+        profiles={[
+          {
+            id: 'reservation',
+            initials: 'VK',
+            name: matchMergeSourceData?.firstName ? `${matchMergeSourceData.firstName} ${matchMergeSourceData.lastName}` : 'Victoria Korsmo',
+            subtitle: 'Created Today',
+            subSubtitle: 'Source: PMS Booking',
+            lastUpdated: new Date().toISOString(),
+            fields: {
+              firstName: { label: 'First name', value: matchMergeSourceData?.firstName || 'Victoria' },
+              lastName: { label: 'Last name', value: matchMergeSourceData?.lastName || 'Korsmo' },
+              email: { label: 'Email', value: matchMergeSourceData?.email || 'victoria.wangkorsmo@gmail.com' },
+              telephone: { label: 'Telephone', value: matchMergeSourceData?.mobile || '+4698271928' },
+              loyaltyCode: { label: 'Loyalty code', value: null },
+              nationality: { label: 'Nationality', value: 'Norwegian' }
+            }
+          },
+          {
+            id: 'member-1',
+            initials: 'AV',
+            name: 'Anne Victoria Eline Wang Korsmo',
+            subtitle: 'Created 2023-11-12',
+            subSubtitle: 'Last updated 2024-01-05',
+            lastUpdated: '2024-01-05T10:00:00Z',
+            isMainTarget: true,
+            fields: {
+              firstName: { label: 'First name', value: 'Anne Victoria Eline Wang' },
+              lastName: { label: 'Last name', value: 'Korsmo' },
+              email: { label: 'Email', value: 'victoria.wangkorsmo@gmail.com' },
+              telephone: { label: 'Telephone', value: '+4698271928' },
+              loyaltyCode: { label: 'Loyalty code', value: 'MCR-89210' },
+              nationality: { label: 'Nationality', value: 'Norwegian' }
+            }
+          },
+          {
+            id: 'member-2',
+            initials: 'AK',
+            name: 'Anne Korsmo',
+            subtitle: 'Created 2020-05-22',
+            subSubtitle: 'Last updated 2021-02-11',
+            lastUpdated: '2021-02-11T12:00:00Z',
+            fields: {
+              firstName: { label: 'First name', value: 'Anne' },
+              lastName: { label: 'Last name', value: 'Korsmo' },
+              email: { label: 'Email', value: 'victoria.wangkorsmo@gmail.com' },
+              telephone: { label: 'Telephone', value: '+4698271928' },
+              loyaltyCode: { label: 'Loyalty code', value: 'MCR-11442' },
+              nationality: { label: 'Nationality', value: 'Norwegian' }
+            }
+          },
+          {
+            id: 'member-3',
+            initials: 'VW',
+            name: 'Victoria Wang',
+            subtitle: 'Created 2018-09-01',
+            subSubtitle: 'Last updated 2019-12-30',
+            lastUpdated: '2019-12-30T15:00:00Z',
+            fields: {
+              firstName: { label: 'First name', value: 'Victoria' },
+              lastName: { label: 'Last name', value: 'Wang' },
+              email: { label: 'Email', value: 'victoria.w@gmail.com' },
+              telephone: { label: 'Telephone', value: '+4698271928' },
+              loyaltyCode: { label: 'Loyalty code', value: null },
+              nationality: { label: 'Nationality', value: 'Norwegian' }
+            }
+          }
+        ]}
       />
     </div>
   );

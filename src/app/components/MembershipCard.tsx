@@ -192,6 +192,7 @@ interface MembershipCardProps {
   yearsAsPlatinum?: number;
   isPotentialMember?: boolean;
   matchingFields?: Array<'email' | 'phone' | 'lastName'>;
+  onReviewMatch?: () => void;
 }
 
 export function MembershipCard({
@@ -208,6 +209,7 @@ export function MembershipCard({
   yearsAsPlatinum,
   isPotentialMember = false,
   matchingFields = [],
+  onReviewMatch,
 }: MembershipCardProps) {
   const [previewTier, setPreviewTier] = useState<MembershipTier>(actualTier);
   const [showAllBenefits, setShowAllBenefits] = useState(false);
@@ -385,9 +387,15 @@ export function MembershipCard({
                       </div>
                     )}
                   </div>
-                  <p className="text-[length:var(--text-xs)] text-muted-foreground mt-2">
+                  <p className="text-[length:var(--text-xs)] text-[#403D3B] mt-2 mb-3">
                     Please verify the guest's identity before proceeding. Enrollment is disabled until confirmation.
                   </p>
+                  <button
+                    onClick={onReviewMatch}
+                    className="w-full bg-[#EA580C] text-white px-3 py-2 rounded-md hover:bg-[#C24100] transition-colors font-bold text-[length:var(--text-xs)] flex items-center justify-center shadow-sm"
+                  >
+                    Review match
+                  </button>
                 </div>
               </div>
             </div>

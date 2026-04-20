@@ -7,6 +7,7 @@ interface InviteToJoinModalProps {
   isOpen: boolean;
   onClose: () => void;
   onEnrollSuccess?: (tier: MembershipTier) => void;
+  onMatchDetected?: (matchingFields: Array<'email' | 'phone' | 'lastName'>, formData: any) => void;
   initialData?: {
     firstName?: string;
     lastName?: string;
@@ -58,7 +59,7 @@ const COUNTRIES = [
   "Zambia", "Zimbabwe",
 ];
 
-export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, initialData }: InviteToJoinModalProps) {
+export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDetected, initialData }: InviteToJoinModalProps) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -105,7 +106,18 @@ export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, initialDat
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate successful enrollment
+    
+    // Simulate checking against database
+    const matches: Array<'email' | 'phone' | 'lastName'> = [];
+    if (formData.email && formData.email.toLowerCase() === "victoria.wangkorsmo@gmail.com") matches.push('email');
+    if (formData.mobile && (formData.mobile.replace(/[\s+]/g, '') === "98271928" || formData.mobile.includes("98271928"))) matches.push('phone');
+
+    if (matches.length > 0 && onMatchDetected) {
+      onMatchDetected(matches, formData);
+      return;
+    }
+
+    // Simulate successful enrollment if no matches
     console.log("Submitting enrollment data:", formData);
     setIsSuccess(true);
   };
