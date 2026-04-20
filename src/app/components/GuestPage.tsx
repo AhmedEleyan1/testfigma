@@ -1180,7 +1180,7 @@ export function GuestPage() {
             initials: 'VK',
             name: matchMergeSourceData?.firstName ? `${matchMergeSourceData.firstName} ${matchMergeSourceData.lastName}` : 'Victoria Korsmo',
             subtitle: 'Created Today',
-            subSubtitle: 'Source: PMS Booking',
+            subSubtitle: 'Last updated Today',
             lastUpdated: new Date().toISOString(),
             fields: {
               firstName: { label: 'First name', value: matchMergeSourceData?.firstName || 'Victoria' },
