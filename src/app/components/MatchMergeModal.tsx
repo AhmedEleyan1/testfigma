@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { ChevronDown, Info, CircleDashed, X, CheckCircle2, ArrowLeft } from "lucide-react";
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
 
 export type FieldKey = string;
 
@@ -187,18 +189,12 @@ export function MatchMergeModal({
                 Resolve Data Conflicts
               </h2>
               <p className="text-[14px] text-muted-foreground mt-1">
-                Select the correct data points to merge into the final profile.
+                Select the correct data points to merge into the final profile. After merging, the reservation will belong to the membership.
               </p>
             </div>
           )}
 
           <div className="flex items-center gap-6">
-            {currentStep === 'select' && (
-              <div className="bg-[#E6F4EA] text-[#137333] px-3 py-1.5 rounded-[6px] border border-[#CEEAD6] flex items-center gap-2 shadow-sm">
-                <CircleDashed className="size-[16px] text-[#137333]/80" />
-                <span className="text-[12px] font-bold uppercase tracking-wide">Chance of match: {matchScore}</span>
-              </div>
-            )}
             {currentStep !== 'success' && (
               <button 
                 onClick={onClose}
@@ -223,7 +219,18 @@ export function MatchMergeModal({
                   </div>
                   {profiles.map(p => (
                     <div key={p.id} className="flex flex-col items-center text-center px-2 py-4 border-b border-[#F7F5F3]">
-                      <div className="size-[48px] rounded-full bg-secondary text-[#403D3B] flex items-center justify-center font-bold text-[16px] mb-3 border border-border shadow-sm shrink-0">
+                      <div className="mb-3 flex justify-center">
+                        {p.isMainTarget ? (
+                          <div className="bg-popover text-popover-foreground text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-border inline-flex items-center gap-1">
+                            <WorkspacePremiumIcon className="w-3.5 h-3.5 text-inherit" /> Registered Member
+                          </div>
+                        ) : (
+                          <div className="bg-[#FFF0F0] text-[#C41E3A] text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-[#C41E3A] inline-flex items-center gap-1">
+                            <PersonSearchIcon className="w-3.5 h-3.5 text-inherit" /> Potential Member
+                          </div>
+                        )}
+                      </div>
+                      <div className="size-[48px] rounded-full bg-secondary text-[#403D3B] flex items-center justify-center font-bold text-[16px] border border-border shadow-sm shrink-0 mb-3">
                         {p.initials}
                       </div>
                       <span className="text-primary font-bold text-[13px] uppercase tracking-wide break-words line-clamp-2 w-full">

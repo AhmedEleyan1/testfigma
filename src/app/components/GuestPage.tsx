@@ -966,10 +966,9 @@ export function GuestPage() {
                           checked={matchingFields.includes('email')}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              const newFields = [...matchingFields.filter(f => f !== 'lastName'), 'email'];
-                              setMatchingFields(newFields);
+                              setMatchingFields(['email']);
                             } else {
-                              setMatchingFields(matchingFields.filter(f => f !== 'email'));
+                              setMatchingFields([]);
                             }
                           }}
                           className="w-[14px] h-[14px] rounded accent-[var(--color-primary)]"
@@ -984,10 +983,9 @@ export function GuestPage() {
                           checked={matchingFields.includes('phone')}
                           onChange={(e) => {
                             if (e.target.checked) {
-                              const newFields = [...matchingFields.filter(f => f !== 'lastName'), 'phone'];
-                              setMatchingFields(newFields);
+                              setMatchingFields(['phone']);
                             } else {
-                              setMatchingFields(matchingFields.filter(f => f !== 'phone'));
+                              setMatchingFields([]);
                             }
                           }}
                           className="w-[14px] h-[14px] rounded accent-[var(--color-primary)]"
@@ -996,29 +994,7 @@ export function GuestPage() {
                           Phone
                         </span>
                       </label>
-                      <label className="flex items-center gap-[8px] cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={matchingFields.includes('lastName')}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              const newFields = matchingFields.filter(f => f === 'email' || f === 'phone').length === 0 ? ['lastName'] : matchingFields;
-                              setMatchingFields(newFields);
-                            } else {
-                              setMatchingFields(matchingFields.filter(f => f !== 'lastName'));
-                            }
-                          }}
-                          disabled={matchingFields.includes('email') || matchingFields.includes('phone')}
-                          className="w-[14px] h-[14px] rounded accent-[var(--color-primary)] disabled:opacity-50 disabled:cursor-not-allowed"
-                        />
-                        <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", color: matchingFields.includes('email') || matchingFields.includes('phone') ? "var(--color-muted-foreground)" : "var(--color-foreground)" }}>
-                          Last Name Only
-                        </span>
-                      </label>
                     </div>
-                    <p style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", color: "var(--color-muted-foreground)" }} className="mt-[4px]">
-                      Note: Last name alone does not trigger potential member flag
-                    </p>
                   </div>
                 )}
 
@@ -1183,12 +1159,13 @@ export function GuestPage() {
             subSubtitle: 'Last updated Today',
             lastUpdated: new Date().toISOString(),
             fields: {
-              firstName: { label: 'First name', value: matchMergeSourceData?.firstName || 'Victoria' },
-              lastName: { label: 'Last name', value: matchMergeSourceData?.lastName || 'Korsmo' },
               email: { label: 'Email', value: matchMergeSourceData?.email || 'victoria.wangkorsmo@gmail.com' },
-              telephone: { label: 'Telephone', value: matchMergeSourceData?.mobile || '+4698271928' },
-              loyaltyCode: { label: 'Loyalty code', value: null },
-              nationality: { label: 'Nationality', value: 'Norwegian' }
+              telephone: { label: 'Telephone', value: '+47 982 71 928' },
+              title: { label: 'Title', value: 'Ms' },
+              nationality: { label: 'Nationality', value: 'Norwegian' },
+              sex: { label: 'Sex', value: 'Female' },
+              dob: { label: 'Date of birth', value: '12 Apr 1985' },
+              loyaltyCode: { label: 'Loyalty code', value: null }
             }
           },
           {
@@ -1200,44 +1177,13 @@ export function GuestPage() {
             lastUpdated: '2024-01-05T10:00:00Z',
             isMainTarget: true,
             fields: {
-              firstName: { label: 'First name', value: 'Anne Victoria Eline Wang' },
-              lastName: { label: 'Last name', value: 'Korsmo' },
               email: { label: 'Email', value: 'victoria.wangkorsmo@gmail.com' },
-              telephone: { label: 'Telephone', value: '+4698271928' },
-              loyaltyCode: { label: 'Loyalty code', value: 'MCR-89210' },
-              nationality: { label: 'Nationality', value: 'Norwegian' }
-            }
-          },
-          {
-            id: 'member-2',
-            initials: 'AK',
-            name: 'Anne Korsmo',
-            subtitle: 'Created 2020-05-22',
-            subSubtitle: 'Last updated 2021-02-11',
-            lastUpdated: '2021-02-11T12:00:00Z',
-            fields: {
-              firstName: { label: 'First name', value: 'Anne' },
-              lastName: { label: 'Last name', value: 'Korsmo' },
-              email: { label: 'Email', value: 'victoria.wangkorsmo@gmail.com' },
-              telephone: { label: 'Telephone', value: '+4698271928' },
-              loyaltyCode: { label: 'Loyalty code', value: 'MCR-11442' },
-              nationality: { label: 'Nationality', value: 'Norwegian' }
-            }
-          },
-          {
-            id: 'member-3',
-            initials: 'VW',
-            name: 'Victoria Wang',
-            subtitle: 'Created 2018-09-01',
-            subSubtitle: 'Last updated 2019-12-30',
-            lastUpdated: '2019-12-30T15:00:00Z',
-            fields: {
-              firstName: { label: 'First name', value: 'Victoria' },
-              lastName: { label: 'Last name', value: 'Wang' },
-              email: { label: 'Email', value: 'victoria.w@gmail.com' },
-              telephone: { label: 'Telephone', value: '+4698271928' },
-              loyaltyCode: { label: 'Loyalty code', value: null },
-              nationality: { label: 'Nationality', value: 'Norwegian' }
+              telephone: { label: 'Telephone', value: '+47 455 12 345' },
+              title: { label: 'Title', value: 'Mrs' },
+              nationality: { label: 'Nationality', value: 'Norwegian' },
+              sex: { label: 'Sex', value: 'Female' },
+              dob: { label: 'Date of birth', value: '12 Apr 1985' },
+              loyaltyCode: { label: 'Loyalty code', value: 'MCR-89210' }
             }
           }
         ]}
