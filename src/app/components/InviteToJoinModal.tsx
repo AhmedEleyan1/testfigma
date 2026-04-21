@@ -14,6 +14,7 @@ interface InviteToJoinModalProps {
     email?: string;
     mobile?: string;
   };
+  isPotentialMember?: boolean;
 }
 
 const LANGUAGES = [
@@ -59,7 +60,7 @@ const COUNTRIES = [
   "Zambia", "Zimbabwe",
 ];
 
-export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDetected, initialData }: InviteToJoinModalProps) {
+export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDetected, initialData, isPotentialMember }: InviteToJoinModalProps) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -109,8 +110,10 @@ export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDet
     
     // Simulate checking against database
     const matches: Array<'email' | 'phone' | 'lastName'> = [];
-    if (formData.email && formData.email.toLowerCase() === "victoria.wangkorsmo@gmail.com") matches.push('email');
-    if (formData.mobile && (formData.mobile.replace(/[\s+]/g, '') === "98271928" || formData.mobile.includes("98271928"))) matches.push('phone');
+    if (isPotentialMember !== false) {
+      if (formData.email && formData.email.toLowerCase() === "victoria.wangkorsmo@gmail.com") matches.push('email');
+      if (formData.mobile && (formData.mobile.replace(/[\s+]/g, '') === "98271928" || formData.mobile.includes("98271928"))) matches.push('phone');
+    }
 
     if (matches.length > 0 && onMatchDetected) {
       onMatchDetected(matches, formData);

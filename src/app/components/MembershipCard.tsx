@@ -193,6 +193,7 @@ interface MembershipCardProps {
   isPotentialMember?: boolean;
   matchingFields?: Array<'email' | 'phone' | 'lastName'>;
   onReviewMatch?: () => void;
+  enrollmentState?: 'idle' | 'enrolling' | 'enrolled' | 'delayed' | 'error';
 }
 
 export function MembershipCard({
@@ -210,6 +211,7 @@ export function MembershipCard({
   isPotentialMember = false,
   matchingFields = [],
   onReviewMatch,
+  enrollmentState = 'idle',
 }: MembershipCardProps) {
   const [previewTier, setPreviewTier] = useState<MembershipTier>(actualTier);
   const [showAllBenefits, setShowAllBenefits] = useState(false);
@@ -398,6 +400,39 @@ export function MembershipCard({
                   </button>
                 </div>
               </div>
+            </div>
+          ) : enrollmentState === 'delayed' ? (
+            <div className="mb-4 p-3 bg-secondary rounded-md border border-border">
+              <div className="flex items-center gap-2 mb-1">
+                <svg className="w-4 h-4 text-primary animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"/>
+                  <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor" className="opacity-75"/>
+                </svg>
+                <p className="font-bold text-[length:var(--text-sm)] text-foreground">Enrollment processing...</p>
+              </div>
+              <p className="text-[length:var(--text-xs)] text-muted-foreground">
+                Membership status submitted and will appear shortly due to system delays.
+              </p>
+            </div>
+          ) : enrollmentState === 'error' ? (
+            <div className="mb-4 p-3 bg-[#FFF0F0] rounded-md border border-[#FFCDD2]">
+              <div className="flex items-center gap-2 mb-1">
+                <svg className="w-4 h-4 text-[#C41E3A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="font-bold text-[length:var(--text-sm)] text-[#C41E3A]">Sync Failed</p>
+              </div>
+              <p className="text-[length:var(--text-xs)] text-[#C41E3A]">
+                Failed to fetch the resulting membership status. Please check back later.
+              </p>
+            </div>
+          ) : enrollmentState === 'enrolling' ? (
+            <div className="mb-4 p-3 bg-secondary rounded-md flex items-center justify-center gap-2">
+               <svg className="w-4 h-4 text-primary animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"/>
+                 <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor" className="opacity-75"/>
+               </svg>
+               <span className="text-[length:var(--text-xs)] text-foreground font-medium">Registering guest...</span>
             </div>
           ) : (
             <div className="mb-4 p-3 bg-secondary rounded-md">

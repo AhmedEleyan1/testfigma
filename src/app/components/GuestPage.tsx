@@ -156,8 +156,12 @@ function ContactMail() {
   );
 }
 
+export type PrototypeEnrollBehavior = 'instant' | 'delayed' | 'error';
+
 export function GuestPage() {
   const [actualTier, setActualTier] = useState<MembershipTier>("non-member");
+  const [enrollmentState, setEnrollmentState] = useState<'idle' | 'enrolling' | 'enrolled' | 'delayed' | 'error'>('idle');
+  const [enrollBehavior, setEnrollBehavior] = useState<PrototypeEnrollBehavior>('instant');
   const [showSuperColleague, setShowSuperColleague] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
@@ -165,6 +169,7 @@ export function GuestPage() {
     if (actualTier === "non-member") {
       setShowSuperColleague(false);
     }
+    setEnrollmentState('idle');
   }, [actualTier]);
   const [isSpaBookingExpanded, setIsSpaBookingExpanded] = useState(false);
   const [bookedAppointments, setBookedAppointments] = useState<Array<{
@@ -923,6 +928,24 @@ export function GuestPage() {
                 {actualTier === 'non-member' && (
                   <div className="flex items-center justify-between pt-[12px] border-t border-[var(--color-border)]">
                     <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-bold)", color: "var(--color-muted-foreground)" }}>
+                      Prototype: Enrollment API
+                    </span>
+                    <select 
+                      value={enrollBehavior}
+                      onChange={(e) => setEnrollBehavior(e.target.value as PrototypeEnrollBehavior)}
+                      className="bg-[#F7F5F3] px-[8px] py-[4px] rounded-[6px] text-[var(--color-foreground)] outline-none"
+                      style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)" }}
+                    >
+                      <option value="instant">Success (Optimistic)</option>
+                      <option value="delayed">Delayed Sync</option>
+                      <option value="error">Fetch Error</option>
+                    </select>
+                  </div>
+                )}
+
+                {actualTier === 'non-member' && (
+                  <div className="flex items-center justify-between pt-[12px] border-t border-[var(--color-border)]">
+                    <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-bold)", color: "var(--color-muted-foreground)" }}>
                       Prototype: Potential Member
                     </span>
                     <div className="flex bg-[#F7F5F3] p-[4px] rounded-[6px]">
@@ -1101,6 +1124,7 @@ export function GuestPage() {
                 yearsAsPlatinum={actualTier === "lifetime-platinum" ? 10 : (actualTier === "platinum" ? 5 : undefined)}
                 isPotentialMember={actualTier === 'non-member' && isPotentialMember && (matchingFields.includes('email') || matchingFields.includes('phone'))}
                 matchingFields={actualTier === 'non-member' && isPotentialMember ? matchingFields.filter(f => f === 'email' || f === 'phone') : []}
+                enrollmentState={enrollmentState}
               />
             </div>
           </div>
@@ -1109,11 +1133,23 @@ export function GuestPage() {
 
       <InviteToJoinModal 
         isOpen={isInviteModalOpen} 
+        isPotentialMember={isPotentialMember}
         onClose={() => setIsInviteModalOpen(false)}
         onEnrollSuccess={(tier) => {
-          setActualTier(tier);
           setIsInviteModalOpen(false);
           setIsPotentialMember(false);
+          setEnrollmentState('enrolling');
+
+          setTimeout(() => {
+            if (enrollBehavior === 'instant') {
+              setActualTier(tier);
+              setEnrollmentState('enrolled');
+            } else if (enrollBehavior === 'delayed') {
+              setEnrollmentState('delayed');
+            } else if (enrollBehavior === 'error') {
+              setEnrollmentState('error');
+            }
+          }, 1500);
         }}
         onMatchDetected={(fields, data) => {
           setMatchingFields(fields);
