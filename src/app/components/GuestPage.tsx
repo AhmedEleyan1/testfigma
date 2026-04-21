@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MembershipCard, type MembershipTier } from "./MembershipCard";
 import { InviteToJoinModal } from "./InviteToJoinModal";
 import { SpaBookingPanel } from "./SpaBookingPanel";
@@ -158,8 +158,14 @@ function ContactMail() {
 
 export function GuestPage() {
   const [actualTier, setActualTier] = useState<MembershipTier>("non-member");
-  const [showSuperColleague, setShowSuperColleague] = useState(true);
+  const [showSuperColleague, setShowSuperColleague] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (actualTier === "non-member") {
+      setShowSuperColleague(false);
+    }
+  }, [actualTier]);
   const [isSpaBookingExpanded, setIsSpaBookingExpanded] = useState(false);
   const [bookedAppointments, setBookedAppointments] = useState<Array<{
     treatmentId: string;
@@ -171,7 +177,7 @@ export function GuestPage() {
     practitioner: string;
   }>>([]);
   const [isPotentialMember, setIsPotentialMember] = useState(true);
-  const [matchingFields, setMatchingFields] = useState<Array<'email' | 'phone' | 'lastName'>>(['email', 'phone']);
+  const [matchingFields, setMatchingFields] = useState<Array<'email' | 'phone' | 'lastName'>>(['email']);
   const [isMatchMergeModalOpen, setIsMatchMergeModalOpen] = useState(false);
   const [matchMergeSourceData, setMatchMergeSourceData] = useState<any>(null);
 
@@ -219,108 +225,16 @@ export function GuestPage() {
         <Header />
 
         <div className="max-w-[1440px] mx-auto px-[32px] py-[24px] w-full">
-          <BackButton />
           {/* Two Column Layout */}
-          <div className="mt-[24px] flex gap-[24px]">
+          <div className="flex gap-[24px]">
             {/* Left Column - Main Content */}
             <div className="flex-1 flex flex-col gap-[24px]">
-              {/* Guest Info & Tabs */}
-              <div className="flex flex-col gap-[24px]">
-                <div>
-                  <div className="flex items-center gap-[8px] mb-[8px]">
-                    <h1 style={{ fontFamily: "var(--font-strawberry-display)", fontSize: "var(--text-2xl)", fontWeight: "var(--font-weight-medium)", color: "var(--color-foreground)" }}>
-                      Victoria Korsmo
-                    </h1>
-                    {actualTier !== "non-member" && (
-                      <div
-                        className="px-[8px] py-[2px] rounded-[var(--radius-lg)]"
-                        style={{
-                          backgroundColor: actualTier === "blue" ? "#CFDBDF" :
-                                         actualTier === "silver" ? "#E6E6E6" :
-                                         actualTier === "gold" ? "#EDE9D6" :
-                                         actualTier === "lifetime-gold" ? "#EDE9D6" :
-                                         actualTier === "platinum" ? "#DEDDDB" :
-                                         actualTier === "lifetime-platinum" ? "#DEDDDB" :
-                                         "#EBE9E7",
-                        }}
-                      >
-                        <span style={{
-                          fontFamily: "var(--font-strawberry-text)",
-                          fontSize: "var(--text-xs)",
-                          fontWeight: "var(--font-weight-bold)",
-                          color: "var(--color-foreground)"
-                        }}>
-                          {actualTier === "lifetime-gold" ? "Lifetime Gold" :
-                           actualTier === "lifetime-platinum" ? "Lifetime Platinum" :
-                           actualTier.charAt(0).toUpperCase() + actualTier.slice(1)}
-                        </span>
-                      </div>
-                    )}
-                    {isPotentialMember && actualTier === "non-member" && (matchingFields.includes('email') || matchingFields.includes('phone')) && (
-                      <div
-                        className="px-[8px] py-[2px] rounded-[var(--radius-lg)] border border-[#C41E3A]"
-                        style={{
-                          backgroundColor: "#FFF0F0",
-                        }}
-                      >
-                        <span style={{
-                          fontFamily: "var(--font-strawberry-text)",
-                          fontSize: "var(--text-xs)",
-                          fontWeight: "var(--font-weight-bold)",
-                          color: "#C41E3A"
-                        }}>
-                          Potential member
-                        </span>
-                      </div>
-                    )}
-                    {showSuperColleague && (
-                      <div
-                        className="px-[8px] py-[4px] rounded-[var(--radius-lg)] border border-[var(--color-border)] flex items-center gap-[4px]"
-                        style={{
-                          backgroundColor: "var(--color-background)",
-                        }}
-                      >
-                        <Logo className="size-[12px]" />
-                        <span style={{
-                          fontFamily: "var(--font-strawberry-text)",
-                          fontSize: "var(--text-xs)",
-                          fontWeight: "var(--font-weight-bold)",
-                          color: "var(--color-foreground)"
-                        }}>
-                          Super Colleague
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-[16px]">
-                    <div className="flex items-center gap-[8px]">
-                      <ContactPhone />
-                      <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", color: "var(--color-muted-foreground)" }}>98271928</span>
-                    </div>
-                    <div className="flex items-center gap-[8px]">
-                      <ContactMail />
-                      <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", color: "var(--color-muted-foreground)" }}>victoria.wangkorsmo@gmail.com</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-[24px]">
-                    <button className="p-[4px]">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M10 12L6 8L10 4" stroke="#403D3B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                    <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", color: "var(--color-muted-foreground)" }} className="cursor-pointer">2 Jun 2024</span>
-                    <div className="bg-white px-[16px] py-[8px] rounded-[8px] shadow-sm">
-                      <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-bold)", color: "var(--color-primary)" }}>2 - 3 Aug 2024</span>
-                    </div>
-                    <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", color: "var(--color-muted-foreground)" }} className="cursor-pointer">13 - 15 Feb 2025</span>
-                    <button className="p-[4px]">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 12L10 8L6 4" stroke="#403D3B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
+              {/* Top Header Row */}
+              <div className="flex items-center justify-between w-full">
+                <BackButton />
+                <div className="flex items-center gap-[16px]">
+                  <div className="bg-white px-[16px] py-[8px] rounded-[8px] shadow-sm border border-[var(--color-border)]">
+                    <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-bold)", color: "var(--color-primary)" }}>20 - 21 Apr 2026</span>
                   </div>
                   <button className="flex items-center gap-[8px]">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -331,6 +245,85 @@ export function GuestPage() {
                     </svg>
                     <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", fontWeight: "var(--font-weight-bold)", color: "var(--color-primary)" }}>Find booking</span>
                   </button>
+                </div>
+              </div>
+
+              {/* Guest Profile Details Card */}
+              <div className="bg-white rounded-[12px] p-[24px] shadow-sm border border-[var(--color-border)]">
+                <div className="flex items-center gap-[8px] mb-[12px]">
+                  <h1 style={{ fontFamily: "var(--font-strawberry-display)", fontSize: "var(--text-2xl)", fontWeight: "var(--font-weight-medium)", color: "var(--color-foreground)" }}>
+                    Victoria Korsmo
+                  </h1>
+                  {actualTier !== "non-member" && (
+                    <div
+                      className="px-[8px] py-[2px] rounded-[var(--radius-lg)]"
+                      style={{
+                        backgroundColor: actualTier === "blue" ? "#CFDBDF" :
+                                       actualTier === "silver" ? "#E6E6E6" :
+                                       actualTier === "gold" ? "#EDE9D6" :
+                                       actualTier === "lifetime-gold" ? "#EDE9D6" :
+                                       actualTier === "platinum" ? "#DEDDDB" :
+                                       actualTier === "lifetime-platinum" ? "#DEDDDB" :
+                                       "#EBE9E7",
+                      }}
+                    >
+                      <span style={{
+                        fontFamily: "var(--font-strawberry-text)",
+                        fontSize: "var(--text-xs)",
+                        fontWeight: "var(--font-weight-bold)",
+                        color: "var(--color-foreground)"
+                      }}>
+                        {actualTier === "lifetime-gold" ? "Lifetime Gold" :
+                         actualTier === "lifetime-platinum" ? "Lifetime Platinum" :
+                         actualTier.charAt(0).toUpperCase() + actualTier.slice(1)}
+                      </span>
+                    </div>
+                  )}
+                  {isPotentialMember && actualTier === "non-member" && (matchingFields.includes('email') || matchingFields.includes('phone')) && (
+                    <div
+                      className="px-[8px] py-[2px] rounded-[var(--radius-lg)] border border-[#C41E3A]"
+                      style={{
+                        backgroundColor: "#FFF0F0",
+                      }}
+                    >
+                      <span style={{
+                        fontFamily: "var(--font-strawberry-text)",
+                        fontSize: "var(--text-xs)",
+                        fontWeight: "var(--font-weight-bold)",
+                        color: "#C41E3A"
+                      }}>
+                        Potential member
+                      </span>
+                    </div>
+                  )}
+                  {showSuperColleague && (
+                    <div
+                      className="px-[8px] py-[4px] rounded-[var(--radius-lg)] border border-[var(--color-border)] flex items-center gap-[4px]"
+                      style={{
+                        backgroundColor: "var(--color-background)",
+                      }}
+                    >
+                      <Logo className="size-[12px]" />
+                      <span style={{
+                        fontFamily: "var(--font-strawberry-text)",
+                        fontSize: "var(--text-xs)",
+                        fontWeight: "var(--font-weight-bold)",
+                        color: "var(--color-foreground)"
+                      }}>
+                        Super Colleague
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center gap-[16px]">
+                  <div className="flex items-center gap-[8px]">
+                    <ContactPhone />
+                    <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", color: "var(--color-muted-foreground)" }}>98271928</span>
+                  </div>
+                  <div className="flex items-center gap-[8px]">
+                    <ContactMail />
+                    <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-sm)", color: "var(--color-muted-foreground)" }}>victoria.wangkorsmo@gmail.com</span>
+                  </div>
                 </div>
               </div>
 
@@ -1159,8 +1152,8 @@ export function GuestPage() {
             subSubtitle: 'Last updated Today',
             lastUpdated: new Date().toISOString(),
             fields: {
-              email: { label: 'Email', value: matchMergeSourceData?.email || 'victoria.wangkorsmo@gmail.com' },
-              telephone: { label: 'Telephone', value: '+47 982 71 928' },
+              email: { label: 'Email', value: matchingFields.includes('email') ? 'victoria.wangkorsmo@gmail.com' : 'victoria@factors.no' },
+              telephone: { label: 'Telephone', value: matchingFields.includes('phone') ? '+47 455 12 345' : '+47 982 71 928' },
               title: { label: 'Title', value: 'Ms' },
               nationality: { label: 'Nationality', value: 'Norwegian' },
               sex: { label: 'Sex', value: 'Female' },
