@@ -15,6 +15,7 @@ interface InviteToJoinModalProps {
     mobile?: string;
   };
   isPotentialMember?: boolean;
+  isApiUnavailable?: boolean;
 }
 
 const LANGUAGES = [
@@ -60,7 +61,7 @@ const COUNTRIES = [
   "Zambia", "Zimbabwe",
 ];
 
-export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDetected, initialData, isPotentialMember }: InviteToJoinModalProps) {
+export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDetected, initialData, isPotentialMember, isApiUnavailable }: InviteToJoinModalProps) {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -78,11 +79,15 @@ export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDet
 
   const [emailConfirmed, setEmailConfirmed] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isApiError, setIsApiError] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setIsSuccess(false); // Reset success state when opened
       setEmailConfirmed(false); // Reset email confirmation
+      setIsSubmitting(false);
+      setIsApiError(false);
     }
 
     if (isOpen && initialData) {
@@ -107,22 +112,32 @@ export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDet
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Simulate checking against database
-    const matches: Array<'email' | 'phone' | 'lastName'> = [];
-    if (isPotentialMember !== false) {
-      if (formData.email && formData.email.toLowerCase() === "victoria.wangkorsmo@gmail.com") matches.push('email');
-      if (formData.mobile && (formData.mobile.replace(/[\s+]/g, '') === "98271928" || formData.mobile.includes("98271928"))) matches.push('phone');
-    }
+    setTimeout(() => {
+      setIsSubmitting(false);
 
-    if (matches.length > 0 && onMatchDetected) {
-      onMatchDetected(matches, formData);
-      return;
-    }
+      if (isApiUnavailable) {
+        setIsApiError(true);
+        return;
+      }
 
-    // Simulate successful enrollment if no matches
-    console.log("Submitting enrollment data:", formData);
-    setIsSuccess(true);
+      // Simulate checking against database
+      const matches: Array<'email' | 'phone' | 'lastName'> = [];
+      if (isPotentialMember !== false) {
+        if (formData.email && formData.email.toLowerCase() === "victoria.wangkorsmo@gmail.com") matches.push('email');
+        if (formData.mobile && (formData.mobile.replace(/[\s+]/g, '') === "98271928" || formData.mobile.includes("98271928"))) matches.push('phone');
+      }
+
+      if (matches.length > 0 && onMatchDetected) {
+        onMatchDetected(matches, formData);
+        return;
+      }
+
+      // Simulate successful enrollment if no matches
+      console.log("Submitting enrollment data:", formData);
+      setIsSuccess(true);
+    }, 800);
   };
 
   const handleDone = () => {
@@ -138,19 +153,53 @@ export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDet
         className="bg-white rounded-[12px] w-[1000px] max-w-[95vw] max-h-[95vh] overflow-y-auto shadow-xl"
         style={{ fontFamily: "var(--font-strawberry-text)" }}
       >
-        <div className="sticky top-0 bg-white z-10 flex items-center justify-between px-[24px] py-[16px] border-b border-[#EBE9E7]">
+        <div className="sticky top-0 bg-white z-10 flex items-center px-[24px] py-[16px] border-b border-[#EBE9E7]">
           <h2 className="text-[20px]" style={{ fontWeight: "var(--font-weight-bold)", color: "var(--foreground)" }}>
             {isSuccess ? "Successfully Enrolled!" : "Invite to join"}
           </h2>
-          <button 
-            onClick={onClose}
-            className="p-[4px] hover:bg-[#F7F5F3] rounded-[4px] transition-colors"
-          >
-            <X className="w-[20px] h-[20px] text-[#403D3B]" />
-          </button>
         </div>
 
-        {isSuccess ? (
+        {isApiError ? (
+          <div className="p-[40px] flex flex-col items-center justify-center text-center max-w-[520px] mx-auto">
+            <div className="size-[56px] rounded-full bg-[#FFF0F0] flex items-center justify-center border border-[#FFCDD2] mb-[20px]">
+              <svg className="w-[28px] h-[28px] text-[#C41E3A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+            </div>
+            
+            <h3 className="text-[24px] mb-[12px]" style={{ fontWeight: "var(--font-weight-bold)", color: "var(--foreground)" }}>
+              Enrollment service offline
+            </h3>
+            
+            <p className="text-[16px] text-[#71706F] mb-[28px] leading-relaxed" style={{ fontWeight: "var(--font-weight-regular)" }}>
+              The membership system is currently experiencing a connection issue. Your form was not submitted. To prevent creating duplicate profiles, please don't try again right now.
+            </p>
+            
+            <div className="bg-[#F7F5F3] p-[20px] rounded-[8px] w-full text-left mb-[32px] border border-[#EBE9E7]">
+              <div className="flex items-start gap-[12px]">
+                <div className="mt-[4px] w-[16px] h-[16px] rounded-full bg-[#EBE9E7] flex items-center justify-center shrink-0">
+                  <div className="w-[8px] h-[8px] rounded-full bg-[#71706F]" />
+                </div>
+                <div>
+                  <p className="text-[14px] text-[#121110] mb-[4px]" style={{ fontWeight: "var(--font-weight-bold)" }}>What to do instead</p>
+                  <p className="text-[14px] text-[#71706F] leading-relaxed">
+                    Kindly ask the guest to enroll using the Strawberry app or at strawberry.se. Alternatively, you can save their details and try again later.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="w-full">
+              <button 
+                onClick={onClose}
+                className="w-full py-[12px] bg-[#F7F5F3] hover:bg-[#EBE9E7] text-[#121110] border border-[#EBE9E7] rounded-[6px] transition-colors text-[16px] shadow-sm"
+                style={{ fontWeight: "var(--font-weight-bold)" }}
+              >
+                Back to Guest
+              </button>
+            </div>
+          </div>
+        ) : isSuccess ? (
           <div className="p-[32px] flex flex-col items-center justify-center text-center space-y-[24px]">
             <Logo className="size-[64px]" />
             <div className="space-y-[8px]">
@@ -352,11 +401,21 @@ export function InviteToJoinModal({ isOpen, onClose, onEnrollSuccess, onMatchDet
             </button>
             <button
               type="submit"
-              disabled={!emailConfirmed}
-              className="px-[16px] py-[8px] rounded-[8px] bg-[#960014] hover:bg-[#7A0010] text-white transition-colors flex items-center gap-[8px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#960014]"
+              disabled={!emailConfirmed || isSubmitting}
+              className="px-[16px] py-[8px] rounded-[8px] bg-[#960014] hover:bg-[#7A0010] text-white transition-colors flex items-center justify-center gap-[8px] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#960014] min-w-[140px]"
               style={{ fontWeight: "var(--font-weight-bold)" }}
             >
-              Enroll member
+              {isSubmitting ? (
+                <>
+                  <svg className="w-[16px] h-[16px] animate-spin text-white" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"/>
+                    <path d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor" className="opacity-75"/>
+                  </svg>
+                  <span>Enrolling...</span>
+                </>
+              ) : (
+                "Enroll member"
+              )}
             </button>
           </div>
         </form>

@@ -162,6 +162,7 @@ export function GuestPage() {
   const [actualTier, setActualTier] = useState<MembershipTier>("non-member");
   const [enrollmentState, setEnrollmentState] = useState<'idle' | 'enrolling' | 'enrolled' | 'delayed' | 'error'>('idle');
   const [enrollBehavior, setEnrollBehavior] = useState<PrototypeEnrollBehavior>('instant');
+  const [isApiUnavailable, setIsApiUnavailable] = useState(false);
   const [showSuperColleague, setShowSuperColleague] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
@@ -926,20 +927,43 @@ export function GuestPage() {
                 </div>
 
                 {actualTier === 'non-member' && (
-                  <div className="flex items-center justify-between pt-[12px] border-t border-[var(--color-border)]">
-                    <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-bold)", color: "var(--color-muted-foreground)" }}>
-                      Prototype: Enrollment API
-                    </span>
-                    <select 
-                      value={enrollBehavior}
-                      onChange={(e) => setEnrollBehavior(e.target.value as PrototypeEnrollBehavior)}
-                      className="bg-[#F7F5F3] px-[8px] py-[4px] rounded-[6px] text-[var(--color-foreground)] outline-none"
-                      style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)" }}
-                    >
-                      <option value="instant">Success (Optimistic)</option>
-                      <option value="delayed">Delayed Sync</option>
-                      <option value="error">Fetch Error</option>
-                    </select>
+                  <div className="flex flex-col pt-[12px] border-t border-[var(--color-border)] gap-[12px]">
+                    <div className="flex items-center justify-between">
+                      <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-bold)", color: "var(--color-muted-foreground)" }}>
+                        Prototype: CRM API
+                      </span>
+                      <div className="flex bg-[#F7F5F3] p-[4px] rounded-[6px]">
+                        <button
+                          onClick={() => setIsApiUnavailable(false)}
+                          className={`px-[8px] py-[4px] rounded-[4px] transition-all ${!isApiUnavailable ? 'bg-white shadow-sm text-[var(--color-foreground)]' : 'text-[#71706F] hover:text-[var(--color-foreground)]'}`}
+                          style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", fontWeight: !isApiUnavailable ? "var(--font-weight-bold)" : "var(--font-weight-regular)" }}
+                        >
+                          Online
+                        </button>
+                        <button
+                          onClick={() => setIsApiUnavailable(true)}
+                          className={`px-[8px] py-[4px] rounded-[4px] transition-all ${isApiUnavailable ? 'bg-white shadow-sm text-[var(--color-foreground)]' : 'text-[#71706F] hover:text-[var(--color-foreground)]'}`}
+                          style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", fontWeight: isApiUnavailable ? "var(--font-weight-bold)" : "var(--font-weight-regular)" }}
+                        >
+                          Offline
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)", fontWeight: "var(--font-weight-bold)", color: "var(--color-muted-foreground)" }}>
+                        Prototype: Result Sync
+                      </span>
+                      <select 
+                        value={enrollBehavior}
+                        onChange={(e) => setEnrollBehavior(e.target.value as PrototypeEnrollBehavior)}
+                        className="bg-[#F7F5F3] px-[8px] py-[4px] rounded-[6px] text-[var(--color-foreground)] outline-none"
+                        style={{ fontFamily: "var(--font-strawberry-text)", fontSize: "var(--text-xs)" }}
+                      >
+                        <option value="instant">Success</option>
+                        <option value="delayed">Delayed Sync</option>
+                        <option value="error">Fetch Error</option>
+                      </select>
+                    </div>
                   </div>
                 )}
 
@@ -1134,6 +1158,7 @@ export function GuestPage() {
       <InviteToJoinModal 
         isOpen={isInviteModalOpen} 
         isPotentialMember={isPotentialMember}
+        isApiUnavailable={isApiUnavailable}
         onClose={() => setIsInviteModalOpen(false)}
         onEnrollSuccess={(tier) => {
           setIsInviteModalOpen(false);
