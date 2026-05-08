@@ -213,7 +213,7 @@ export function MatchMergeModal({
           {currentStep === 'confirm' ? (
             <>
               <button onClick={onEnroll} className="flex items-center gap-2 text-[#5A0032] font-bold text-[14px] hover:underline">
-                <UserPlus className="size-4" /> Enroll Guest
+                <UserPlus className="size-[16px]" aria-hidden="true" /> Enroll as New Member
               </button>
               <div className="flex gap-4">
                 <button onClick={onClose} className="px-5 py-2 text-[#575655] font-bold text-[14px] hover:text-[#403D3B]">Decide later</button>
