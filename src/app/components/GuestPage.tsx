@@ -1197,6 +1197,11 @@ export function GuestPage() {
           setIsPotentialMember(false);
           setIsMatchMergeModalOpen(false);
         }}
+        onEnroll={() => {
+          setIsPotentialMember(false);
+          setIsMatchMergeModalOpen(false);
+          setIsInviteModalOpen(true);
+        }}
         onMerge={(resolvedData) => {
           console.log("Merged with chosen field values:", resolvedData);
           setActualTier(mockExistingMemberData.tier);
@@ -1217,9 +1222,9 @@ export function GuestPage() {
               telephone: { label: 'Telephone', value: matchingFields.includes('phone') ? '+47 455 12 345' : '+47 982 71 928' },
               title: { label: 'Title', value: 'Ms' },
               nationality: { label: 'Nationality', value: 'Norwegian' },
-              sex: { label: 'Sex', value: 'Female' },
+              gender: { label: 'Gender', value: 'Female' },
               dob: { label: 'Date of birth', value: '12 Apr 1985' },
-              loyaltyCode: { label: 'Loyalty code', value: null }
+              loyaltyCode: { label: 'Membership ID', value: null }
             }
           },
           {
@@ -1235,9 +1240,9 @@ export function GuestPage() {
               telephone: { label: 'Telephone', value: '+47 455 12 345' },
               title: { label: 'Title', value: 'Mrs' },
               nationality: { label: 'Nationality', value: 'Norwegian' },
-              sex: { label: 'Sex', value: 'Female' },
+              gender: { label: 'Gender', value: 'Female' },
               dob: { label: 'Date of birth', value: '12 Apr 1985' },
-              loyaltyCode: { label: 'Loyalty code', value: 'MCR-89210' }
+              loyaltyCode: { label: 'Membership ID', value: 'MCR-89210' }
             }
           }
         ]}
